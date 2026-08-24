@@ -1,6 +1,6 @@
 # FA Minigames
 
-Free, framework-independent NUI minigames for FiveM. The resource exposes ten client exports and has no framework, inventory or server dependency.
+Free, framework-independent NUI minigames for FiveM.
 
 ## Games
 
@@ -56,7 +56,7 @@ Preset mechanics:
 
 ## Compact presentation
 
-Skillbar, Sequence, Lockpick and Pattern support an optional compact layout. It removes surrounding chrome and secondary information while keeping gameplay controls at their regular, readable size. Difficulty, callbacks and result data remain unchanged.
+Skillbar, Sequence, Lockpick and Pattern support an optional compact layout. It removes surrounding chrome and secondary information. Difficulty, callbacks and result data remain unchanged.
 
 ```lua
 local result = exports.fa_minigames:Lockpick({
@@ -66,7 +66,7 @@ local result = exports.fa_minigames:Lockpick({
 })
 ```
 
-The full layout remains the default. Use `?game=lockpick&compact=true` in the browser preview to inspect a compact variant.
+The full layout remains the default. Use `?compact=true` in the browser preview to inspect a compact variant.
 
 ## Installation
 
@@ -75,8 +75,6 @@ The full layout remains the default. Use `?game=lockpick&compact=true` in the br
 3. Add `ensure fa_minigames` before resources that consume its exports.
 
 ## Usage
-
-Every export is synchronous from the calling Lua coroutine:
 
 ```lua
 local result = exports.fa_minigames:Skillbar({
@@ -137,10 +135,6 @@ npm.cmd run build
 ```
 
 Append `?game=terminal` (or another lowercase game name) to the local Vite URL to open a specific browser mock. The production build is written to `web/dist`; consumers do not need `web/node_modules`.
-
-## Security
-
-Minigame success is client-provided input, not proof that a player should receive an item, money or access. Validate distance, permissions, session state, rate limits and rewards on the server that owns the gameplay action.
 
 ## License
 

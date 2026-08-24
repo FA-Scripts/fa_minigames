@@ -77,7 +77,6 @@ button {
   outline: none;
 }
 
-/* FA Scripts secure keypad */
 .fa-keypad {
   position: relative;
   width: min(420px, calc(100vw - 36px));
@@ -462,7 +461,6 @@ button {
   }
 }
 
-/* Fleeca-inspired physical drill */
 .drill-game {
   width: min(900px, calc(100vw - 48px));
   padding: 22px 24px 18px;

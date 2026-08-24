@@ -149,7 +149,6 @@
   cursor: wait;
 }
 
-/* Signal calibrator */
 .skillbar {
   position: relative;
   width: min(640px, 100%);
@@ -228,7 +227,6 @@
   letter-spacing: .13em;
 }
 
-/* Memory relay and pattern matrix */
 .sequence-console {
   display: grid;
   gap: 18px;
@@ -326,7 +324,6 @@
   transform: translateY(-1px);
 }
 
-/* Tumbler override */
 .lockpick {
   --pick-angle: 0deg;
   --turn: 0deg;
@@ -448,7 +445,6 @@
   }
 }
 
-/* Patch bay */
 .wire-board {
   position: relative;
   width: min(650px, 100%);
@@ -595,7 +591,6 @@
   top: 75%
 }
 
-/* Power router */
 .circuit-board {
   position: relative;
   padding: 18px 82px;
@@ -711,7 +706,6 @@
   flex-direction: row-reverse;
 }
 
-/* Forensic reader */
 .fingerprint {
   display: grid;
   justify-items: center;
@@ -845,7 +839,6 @@
   }
 }
 
-/* Packet sniffer */
 .terminal {
   width: min(650px, 100%);
   display: grid;
@@ -1093,7 +1086,6 @@
   }
 }
 
-/* Keypad visual system */
 .mini-panel {
   border-color: rgba(255, 255, 255, .11);
   border-radius: 24px;
@@ -1193,7 +1185,6 @@
   background: #8d4fe8
 }
 
-/* Drill rebuilt in the keypad material and color language */
 .drill-game {
   border-color: rgba(255, 255, 255, .11);
   border-radius: 24px;
@@ -1291,7 +1282,6 @@
   border-color: #a76be8
 }
 
-/* Optional compact presentation */
 .mini-panel.is-compact .mini-panel__header {
   align-items: center;
   padding: 13px 22px
