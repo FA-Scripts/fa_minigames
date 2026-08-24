@@ -1,0 +1,5 @@
+devweb/node_modules/
+devweb/dist/
+devweb/*.tsbuildinfo
+.DS_Store
+Thumbs.db
