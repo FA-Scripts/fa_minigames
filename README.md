@@ -129,15 +129,14 @@ Returning `close = false` clears an invalid entry and leaves the keypad open. Th
 ## Development
 
 ```powershell
-cd devweb
+cd web
 npm.cmd install
 npm.cmd run dev
 npm.cmd run typecheck
 npm.cmd run build
-npm.cmd run validate:lua
 ```
 
-Append `?game=terminal` (or another lowercase game name) to the local Vite URL to open a specific browser mock. The production build is written to `web/dist`; consumers do not need `devweb/node_modules`.
+Append `?game=terminal` (or another lowercase game name) to the local Vite URL to open a specific browser mock. The production build is written to `web/dist`; consumers do not need `web/node_modules`.
 
 ## Security
 

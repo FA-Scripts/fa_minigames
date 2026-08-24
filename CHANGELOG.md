@@ -7,4 +7,4 @@ All notable changes to this project are documented here.
 - Initial open-source release.
 - Added Drill, Keypad, Skillbar, Sequence, Lockpick, Pattern, Wires, Circuit, Fingerprint and Terminal.
 - Added a framework-independent client export API.
-- Added browser mocks, TypeScript validation and Lua parsing checks.
+- Added browser mocks.

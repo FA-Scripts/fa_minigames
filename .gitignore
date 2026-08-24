@@ -1,5 +1,6 @@
-devweb/node_modules/
-devweb/dist/
-devweb/*.tsbuildinfo
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
+web/scripts
 .DS_Store
 Thumbs.db
