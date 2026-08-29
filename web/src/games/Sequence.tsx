@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { clampOption, GamePanel, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, type GameProps } from "./shared";
 
 export function Sequence({ options, onComplete }: GameProps) {
   const length = clampOption(options, "length", 5, 3, 9);
@@ -48,10 +48,11 @@ export function Sequence({ options, onComplete }: GameProps) {
     <GamePanel
       variant="sequence"
       compact={options.compact === true}
-      eyebrow="MEMORY RELAY // FA-06"
-      title="Repeat the sequence"
-      status={ready ? `INPUT ${entered.length}/${length}` : "RECORDING"}
-      instructions="Observe the relay pulse, then reproduce the complete sequence."
+      eyebrow={localeText(options, "sequenceEyebrow", "MEMORY RELAY // FA-06")}
+      title={localeText(options, "sequenceTitle", "Repeat the sequence")}
+      status={ready ? localeText(options, "sequenceInput", "INPUT {entered}/{length}", { entered: entered.length, length }) : localeText(options, "sequenceRecording", "RECORDING")}
+      instructions={localeText(options, "sequenceInstructions", "Observe the relay pulse, then reproduce the complete sequence.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div className="sequence-console">
         <div className="sequence-leds">

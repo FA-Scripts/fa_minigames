@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { clampOption, GamePanel, shuffle, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, shuffle, type GameProps } from "./shared";
 
 export function Pattern({ options, onComplete }: GameProps) {
   const length = clampOption(options, "length", 6, 3, 9);
@@ -34,10 +34,11 @@ export function Pattern({ options, onComplete }: GameProps) {
     <GamePanel
       variant="pattern"
       compact={options.compact === true}
-      eyebrow="ACCESS MATRIX"
-      title="Restore the pattern"
-      status={preview ? "MEMORIZE" : `${selected.length}/${length}`}
-      instructions="Remember every active cell, then select the same set."
+      eyebrow={localeText(options, "patternEyebrow", "ACCESS MATRIX")}
+      title={localeText(options, "patternTitle", "Restore the pattern")}
+      status={preview ? localeText(options, "patternMemorize", "MEMORIZE") : `${selected.length}/${length}`}
+      instructions={localeText(options, "patternInstructions", "Remember every active cell, then select the same set.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div className="pattern-grid">
         {Array.from({ length: 16 }, (_, cell) => (

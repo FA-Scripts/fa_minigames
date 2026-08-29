@@ -12,6 +12,7 @@ import {
   Terminal,
   Wires,
 } from "./games";
+import { localeText } from "./games/shared";
 
 type Game =
   | "drill"
@@ -30,6 +31,73 @@ type NuiMessage = {
   requestId?: string;
   options?: Record<string, unknown>;
 };
+
+type Theme = {
+  main: string;
+  accent: string;
+};
+
+const defaultTheme: Theme = {
+  main: "#0B0B0F",
+  accent: "#8D4FE8",
+};
+
+const hexColorPattern = /^#[0-9a-f]{6}$/i;
+
+function readHexColor(value: unknown, fallback: string) {
+  return typeof value === "string" && hexColorPattern.test(value)
+    ? value.toUpperCase()
+    : fallback;
+}
+
+function mixHex(color: string, target: string, amount: number) {
+  const readChannel = (value: string, offset: number) =>
+    Number.parseInt(value.slice(offset, offset + 2), 16);
+  const channel = (from: number, to: number) =>
+    Math.round(from + (to - from) * amount)
+      .toString(16)
+      .padStart(2, "0");
+
+  return `#${channel(readChannel(color, 1), readChannel(target, 1))}${channel(readChannel(color, 3), readChannel(target, 3))}${channel(readChannel(color, 5), readChannel(target, 5))}`.toUpperCase();
+}
+
+function getContrastInk(color: string) {
+  const channels = [1, 3, 5].map((offset) => {
+    const value = Number.parseInt(color.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.04045
+      ? value / 12.92
+      : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  const luminance =
+    channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+
+  return luminance > 0.42 ? "#090A0C" : "#FFFFFF";
+}
+
+function createThemeStyle(options: Record<string, unknown>) {
+  const requested =
+    options.theme && typeof options.theme === "object"
+      ? (options.theme as Record<string, unknown>)
+      : {};
+  const main = readHexColor(requested.main, defaultTheme.main);
+  const accent = readHexColor(requested.accent, defaultTheme.accent);
+  const accentRgb = [1, 3, 5]
+    .map((offset) => Number.parseInt(accent.slice(offset, offset + 2), 16))
+    .join(", ");
+
+  return {
+    "--theme-main": main,
+    "--theme-main-soft": mixHex(main, "#FFFFFF", 0.06),
+    "--theme-main-elevated": mixHex(main, "#FFFFFF", 0.11),
+    "--theme-main-dark": mixHex(main, "#000000", 0.32),
+    "--theme-accent": accent,
+    "--theme-accent-light": mixHex(accent, "#FFFFFF", 0.3),
+    "--theme-accent-dark": mixHex(accent, "#000000", 0.3),
+    "--theme-accent-deep": mixHex(accent, "#000000", 0.52),
+    "--theme-accent-rgb": accentRgb,
+    "--theme-accent-ink": getContrastInk(accent),
+  } as React.CSSProperties;
+}
 
 const isBrowser = !(window as Window & { invokeNative?: unknown }).invokeNative;
 const gameNames: Game[] = [
@@ -54,6 +122,11 @@ const browserMockGame: Game =
 const browserMockCompact = ["true", "1"].includes(
   new URLSearchParams(window.location.search).get("compact") ?? "",
 );
+const browserParams = new URLSearchParams(window.location.search);
+const browserMockTheme = {
+  main: readHexColor(`#${browserParams.get("main") ?? ""}`, defaultTheme.main),
+  accent: readHexColor(`#${browserParams.get("accent") ?? ""}`, defaultTheme.accent),
+};
 const drillStartPosition = -12;
 
 async function nuiCallback(
@@ -84,9 +157,11 @@ async function nuiCallback(
 function Drill({
   options,
   onClose,
+  requestId,
 }: {
   options: Record<string, unknown>;
   onClose: () => void;
+  requestId: string;
 }) {
   const difficulty = Math.min(Math.max(Number(options.difficulty) || 2, 1), 5);
   const pinContacts = [0, 28, 56, 84];
@@ -110,10 +185,10 @@ function Drill({
     async (success: boolean) => {
       if (finished.current) return;
       finished.current = true;
-      await nuiCallback("complete", { game: "drill", success });
+      await nuiCallback("complete", { game: "drill", requestId, success });
       onClose();
     },
-    [onClose],
+    [onClose, requestId],
   );
 
   useEffect(() => {
@@ -233,16 +308,16 @@ function Drill({
   const isGrinding = isTouching && rpm >= 45 && feed > safeFeed;
   const status =
     heat >= 82
-      ? "BACK OFF — BIT OVERHEATING"
+      ? localeText(options, "drillOverheating", "BACK OFF - BIT OVERHEATING")
       : isGrinding
-        ? "TOO MUCH PRESSURE"
+        ? localeText(options, "drillTooMuchPressure", "TOO MUCH PRESSURE")
         : !isTouching
-          ? `LINE UP PIN ${currentPin + 1}`
+          ? localeText(options, "drillAlign", "LINE UP PIN {pin}", { pin: currentPin + 1 })
           : rpm < 58
-            ? "SPIN UP THE DRILL"
+            ? localeText(options, "drillSpinUp", "SPIN UP THE DRILL")
             : isBiting
-              ? `CUTTING PIN ${currentPin + 1}`
-              : "ADD PRESSURE GENTLY";
+              ? localeText(options, "drillCutting", "CUTTING PIN {pin}", { pin: currentPin + 1 })
+              : localeText(options, "drillPressure", "ADD PRESSURE GENTLY");
   const sceneStyle = {
     "--depth": `${depth}%`,
     "--travel": `${position * 2.65}px`,
@@ -255,8 +330,8 @@ function Drill({
     <section className="drill-game" aria-label="Drill minigame">
       <header className="drill-game__header">
         <div>
-          <span className="drill-kicker">DEPOSIT LOCK // 4 PIN</span>
-          <h1>KEEP IT STEADY</h1>
+          <span className="drill-kicker">{localeText(options, "drillKicker", "DEPOSIT LOCK // 4 PIN")}</span>
+          <h1>{localeText(options, "drillTitle", "KEEP IT STEADY")}</h1>
         </div>
         <div
           className="pin-counter"
@@ -372,19 +447,19 @@ function Drill({
         </div>
         <div className="drill-controls">
           <span>
-            <kbd>LMB</kbd> / <kbd>SPACE</kbd> SPIN
+            <kbd>LMB</kbd> / <kbd>SPACE</kbd> {localeText(options, "drillSpin", "SPIN")}
           </span>
           <span>
             <kbd>W</kbd>
-            <kbd>S</kbd> / MOVE MOUSE PRESSURE
+            <kbd>S</kbd> / {localeText(options, "drillMovePressure", "MOVE MOUSE PRESSURE")}
           </span>
           <span>
-            <kbd>ESC</kbd> CANCEL
+            <kbd>ESC</kbd> {localeText(options, "cancel", "CANCEL")}
           </span>
         </div>
       </footer>
       <p className="drill-hint">
-        Let the bit bite. Push gently and pull back when the steel turns red.
+        {localeText(options, "drillHint", "Let the bit bite. Push gently and pull back when the steel turns red.")}
       </p>
       <span className="sr-only">
         Difficulty level {difficulty}. Drill heat {Math.round(heat)} percent.
@@ -398,14 +473,16 @@ function Keypad({
   options,
   onClose,
   onInputLock,
+  requestId,
 }: {
   options: Record<string, unknown>;
   onClose: () => void;
   onInputLock: (locked: boolean) => void;
+  requestId: string;
 }) {
   const requestedTitle =
     typeof options.title === "string" ? options.title.trim() : "";
-  const title = requestedTitle ? requestedTitle.slice(0, 32) : "Safe";
+  const title = requestedTitle ? requestedTitle.slice(0, 32) : localeText(options, "keypadTitle", "ACCESS CONTROL");
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState<"success" | "error" | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -446,6 +523,7 @@ function Keypad({
     try {
       const response = (await nuiCallback("complete", {
         game: "keypad",
+        requestId,
         code,
       })) as {
         feedback?: "success" | "error";
@@ -463,7 +541,7 @@ function Keypad({
       await new Promise((resolve) => window.setTimeout(resolve, 800));
 
       if (response.close) {
-        await nuiCallback("keypadFeedbackComplete");
+        await nuiCallback("keypadFeedbackComplete", { requestId });
         onClose();
         return;
       }
@@ -474,7 +552,7 @@ function Keypad({
       setSubmitting(false);
       onInputLock(false);
     }
-  }, [code, feedback, onClose, onInputLock, playFeedbackTone, submitting]);
+  }, [code, feedback, onClose, onInputLock, playFeedbackTone, requestId, submitting]);
 
   useEffect(() => () => onInputLock(false), [onInputLock]);
 
@@ -518,7 +596,7 @@ function Keypad({
       />
       <header className="fa-keypad__header">
         <div className="fa-keypad__heading">
-          <span>SECURITY KEYPAD</span>
+          <span>{localeText(options, "keypadKicker", "SECURITY KEYPAD")}</span>
           <h1>{title}</h1>
         </div>
         <div className="fa-keypad__speaker" aria-hidden="true">
@@ -532,7 +610,7 @@ function Keypad({
         aria-live="polite"
       >
         <div className="fa-keypad__display-label">
-          <span>ENTER SAFE CODE</span>
+          <span>{localeText(options, "keypadPrompt", "ENTER SAFE CODE")}</span>
           <small>{code.length}/4</small>
         </div>
         <div
@@ -582,7 +660,7 @@ function Keypad({
             onClick={() => press(key)}
           >
             {key === "clear" ? (
-              "CLR"
+              localeText(options, "keypadClear", "CLR")
             ) : key === "enter" ? (
               <svg
                 className="fa-key__arrow"
@@ -600,10 +678,10 @@ function Keypad({
       </div>
       <footer className="fa-keypad__footer">
         <span>
-          <kbd>ESC</kbd> CANCEL
+          <kbd>ESC</kbd> {localeText(options, "cancel", "CANCEL")}
         </span>
         <span>
-          <kbd>ENTER</kbd> CONFIRM
+          <kbd>ENTER</kbd> {localeText(options, "confirm", "CONFIRM")}
         </span>
       </footer>
     </section>
@@ -615,9 +693,11 @@ function App() {
     isBrowser ? browserMockGame : null,
   );
   const [options, setOptions] = useState<Record<string, unknown>>(
-    browserMockCompact ? { compact: true } : {},
+    { compact: browserMockCompact, theme: browserMockTheme },
   );
   const inputLocked = useRef(false);
+  const completionLocked = useRef(false);
+  const [requestId, setRequestId] = useState("browser-preview");
 
   const close = useCallback(() => setGame(null), []);
   const setInputLock = useCallback((locked: boolean) => {
@@ -625,18 +705,21 @@ function App() {
   }, []);
   const completeStandardGame = useCallback(
     async (success: boolean, data?: Record<string, unknown>) => {
-      if (!game) return;
-      await nuiCallback("complete", { game, success, data: data ?? {} });
+      if (!game || completionLocked.current) return;
+      completionLocked.current = true;
+      await nuiCallback("complete", { game, requestId, success, data: data ?? {} });
       close();
     },
-    [close, game],
+    [close, game, requestId],
   );
 
   useEffect(() => {
     const onMessage = (event: MessageEvent<NuiMessage>) => {
       if (event.data.action === "close") return close();
       if (event.data.action === "open" && event.data.game) {
+        completionLocked.current = false;
         setOptions(event.data.options ?? {});
+        setRequestId(event.data.requestId ?? "");
         setGame(event.data.game);
       }
     };
@@ -654,8 +737,10 @@ function App() {
 
   if (!game) return null;
 
+  const themeStyle = createThemeStyle(options);
+
   return (
-    <main className="overlay">
+    <main className="overlay" style={themeStyle}>
       <div className="grain" />
       {isBrowser && (
         <nav className="mock-switch" aria-label="Browser mock selector">
@@ -670,9 +755,9 @@ function App() {
           ))}
         </nav>
       )}
-      {game === "drill" && <Drill options={options} onClose={close} />}
+      {game === "drill" && <Drill options={options} onClose={close} requestId={requestId} />}
       {game === "keypad" && (
-        <Keypad options={options} onClose={close} onInputLock={setInputLock} />
+        <Keypad options={options} onClose={close} onInputLock={setInputLock} requestId={requestId} />
       )}
       {game === "skillbar" && (
         <Skillbar options={options} onComplete={completeStandardGame} />

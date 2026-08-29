@@ -19,6 +19,23 @@ export function clampOption(
   );
 }
 
+export function localeText(
+  options: Record<string, unknown>,
+  key: string,
+  fallback: string,
+  variables: Record<string, string | number> = {},
+) {
+  const locale =
+    options.locale && typeof options.locale === "object"
+      ? (options.locale as Record<string, unknown>)
+      : {};
+  const value = typeof locale[key] === "string" ? locale[key] : fallback;
+
+  return value.replace(/\{(\w+)\}/g, (token, name: string) =>
+    variables[name] === undefined ? token : String(variables[name]),
+  );
+}
+
 export function GamePanel({
   eyebrow,
   title,
@@ -27,6 +44,7 @@ export function GamePanel({
   status,
   compact = false,
   variant,
+  cancelLabel = "CANCEL",
 }: {
   eyebrow: string;
   title: string;
@@ -35,6 +53,7 @@ export function GamePanel({
   status?: string;
   compact?: boolean;
   variant?: string;
+  cancelLabel?: string;
 }) {
   const className = [
     "mini-panel",
@@ -60,7 +79,7 @@ export function GamePanel({
       <footer>
         <p>{instructions}</p>
         <span>
-          <kbd>ESC</kbd> CANCEL
+          <kbd>ESC</kbd> {cancelLabel}
         </span>
       </footer>
     </section>

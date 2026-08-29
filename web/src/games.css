@@ -3,7 +3,7 @@
   --instrument-muted: #8d8a82;
   --instrument-line: #34342f;
   --instrument-metal: #242521;
-  --instrument-purple: #8d4fe8;
+  --instrument-purple: var(--theme-accent);
   --instrument-green: #79c68f;
   --instrument-amber: #d3a44b;
 }
@@ -887,7 +887,7 @@
   height: 8px;
   border-radius: 50%;
   background: #9b5bf0;
-  box-shadow: 0 0 9px #8d4fe8;
+  box-shadow: 0 0 9px var(--theme-accent);
   animation: terminal-pulse 1s steps(2, end) infinite
 }
 
@@ -1089,8 +1089,8 @@
 .mini-panel {
   border-color: rgba(255, 255, 255, .11);
   border-radius: 24px;
-  background: radial-gradient(circle at 50% -20%, rgba(107, 33, 232, .14), transparent 46%), #0b0b0f;
-  box-shadow: 0 30px 85px rgba(0, 0, 0, .72), 0 0 38px rgba(107, 33, 232, .08), inset 0 0 0 2px rgba(255, 255, 255, .025)
+  background: radial-gradient(circle at 50% -20%, rgba(var(--theme-accent-rgb), .14), transparent 46%), var(--theme-main);
+  box-shadow: 0 30px 85px rgba(0, 0, 0, .72), 0 0 38px rgba(var(--theme-accent-rgb), .08), inset 0 0 0 2px rgba(255, 255, 255, .025)
 }
 
 .mini-panel::before {
@@ -1109,10 +1109,27 @@
   background: rgba(255, 255, 255, .015)
 }
 
+.mini-panel__header output {
+  color: var(--theme-accent-light)
+}
+
+.action-button,
+.lockpick__turn {
+  border-color: var(--theme-accent-dark);
+  color: var(--theme-accent-ink);
+  background: linear-gradient(180deg, var(--theme-accent), var(--theme-accent-dark));
+  box-shadow: 0 3px 0 var(--theme-accent-deep), inset 0 1px rgba(255, 255, 255, .14)
+}
+
+.action-button:active,
+.lockpick__turn:active {
+  box-shadow: 0 1px 0 var(--theme-accent-deep)
+}
+
 .skillbar__zone {
-  border-inline-color: #a979ff;
-  background: linear-gradient(90deg, rgba(107, 33, 232, .22), rgba(169, 121, 255, .62), rgba(107, 33, 232, .22));
-  box-shadow: inset 0 0 18px rgba(139, 73, 238, .32), 0 0 15px rgba(107, 33, 232, .22)
+  border-inline-color: var(--theme-accent-light);
+  background: linear-gradient(90deg, rgba(var(--theme-accent-rgb), .22), rgba(var(--theme-accent-rgb), .62), rgba(var(--theme-accent-rgb), .22));
+  box-shadow: inset 0 0 18px rgba(var(--theme-accent-rgb), .32), 0 0 15px rgba(var(--theme-accent-rgb), .22)
 }
 
 .skillbar__zone b {
@@ -1121,60 +1138,74 @@
 
 .sequence-grid button.is-lit,
 .pattern-grid button.is-active {
-  color: white;
-  background: linear-gradient(#9859f0, #6425c8);
-  box-shadow: 0 0 18px rgba(139, 73, 238, .34), 0 3px 0 #32105f
+  color: var(--theme-accent-ink);
+  background: linear-gradient(var(--theme-accent-light), var(--theme-accent-dark));
+  box-shadow: 0 0 18px rgba(var(--theme-accent-rgb), .34), 0 3px 0 var(--theme-accent-deep)
 }
 
 .pattern-grid {
-  border-color: #3b3247;
-  background: #111016
+  border-color: var(--theme-main-elevated);
+  background: var(--theme-main-soft)
 }
 
 .lockpick__meters span {
-  border-color: #3e344b;
-  background: #09080c
+  border-color: var(--theme-main-elevated);
+  background: var(--theme-main-dark)
 }
 
 .lockpick__meters i,
 .lockpick__meters label:last-child i {
-  background: #9b5bf0
+  background: var(--theme-accent)
 }
 
 .circuit-grid b {
-  background: #decaff;
-  box-shadow: 0 0 9px rgba(169, 121, 255, .65)
+  background: var(--theme-accent-light);
+  box-shadow: 0 0 9px rgba(var(--theme-accent-rgb), .65)
 }
 
 .trace {
-  background: #8d4fe8;
-  box-shadow: inset 0 1px rgba(255, 255, 255, .18), 0 0 7px rgba(107, 33, 232, .3)
+  background: var(--theme-accent);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .18), 0 0 7px rgba(var(--theme-accent-rgb), .3)
 }
 
 .circuit-terminal i {
-  border-color: #a979ff;
-  background: #100b16;
-  box-shadow: 0 0 10px rgba(139, 73, 238, .5)
+  border-color: var(--theme-accent-light);
+  background: var(--theme-main-soft);
+  box-shadow: 0 0 10px rgba(var(--theme-accent-rgb), .5)
+}
+
+.fingerprint__slice button:hover {
+  color: var(--theme-accent-light);
+  background: var(--theme-main-elevated)
+}
+
+.fingerprint__graphic g {
+  stroke: var(--theme-accent-light);
+  filter: drop-shadow(0 0 2px rgba(var(--theme-accent-rgb), .28))
+}
+
+.fingerprint__graphic path:nth-child(4n) {
+  stroke: var(--theme-accent)
 }
 
 .terminal {
-  border-color: #3a2d4d;
-  background: #09070d
+  border-color: var(--theme-main-elevated);
+  background: var(--theme-main-dark)
 }
 
 .terminal-grid {
-  scrollbar-color: #6b3da4 #0d0912
+  scrollbar-color: var(--theme-accent-dark) var(--theme-main-dark)
 }
 
 .terminal-grid button {
-  border-color: #372943;
-  color: #cdb6ec;
-  background: #120e18
+  border-color: var(--theme-main-elevated);
+  color: var(--theme-accent-light);
+  background: var(--theme-main-soft)
 }
 
 .terminal-grid button:hover {
-  border-color: #8d4fe8;
-  background: #1c1328
+  border-color: var(--theme-accent);
+  background: var(--theme-main-elevated)
 }
 
 .terminal-grid button span {
@@ -1182,19 +1213,19 @@
 }
 
 .terminal-grid button i {
-  background: #8d4fe8
+  background: var(--theme-accent)
 }
 
 .drill-game {
   border-color: rgba(255, 255, 255, .11);
   border-radius: 24px;
   color: #f4f0fa;
-  background: radial-gradient(circle at 50% -12%, rgba(107, 33, 232, .16), transparent 40%), #0b0b0f;
-  box-shadow: 0 30px 85px rgba(0, 0, 0, .72), 0 0 38px rgba(107, 33, 232, .08), inset 0 0 0 2px rgba(255, 255, 255, .025)
+  background: radial-gradient(circle at 50% -12%, rgba(var(--theme-accent-rgb), .16), transparent 40%), var(--theme-main);
+  box-shadow: 0 30px 85px rgba(0, 0, 0, .72), 0 0 38px rgba(var(--theme-accent-rgb), .08), inset 0 0 0 2px rgba(255, 255, 255, .025)
 }
 
 .drill-kicker {
-  color: #a979ff
+  color: var(--theme-accent-light)
 }
 
 .pin-counter span {
@@ -1205,21 +1236,21 @@
 }
 
 .pin-counter span.is-current {
-  border-color: #9859f0;
-  color: #e3d2ff;
-  box-shadow: inset 0 0 12px rgba(107, 33, 232, .25), 0 0 10px rgba(107, 33, 232, .12)
+  border-color: var(--theme-accent-light);
+  color: var(--theme-accent-light);
+  box-shadow: inset 0 0 12px rgba(var(--theme-accent-rgb), .25), 0 0 10px rgba(var(--theme-accent-rgb), .12)
 }
 
 .pin-counter span.is-cleared {
-  border-color: #7444b8;
-  color: white;
-  background: #6425c8
+  border-color: var(--theme-accent-dark);
+  color: var(--theme-accent-ink);
+  background: var(--theme-accent-dark)
 }
 
 .lock-scene {
   border-color: #39313f;
   border-radius: 16px;
-  background: radial-gradient(ellipse at 68% 48%, rgba(107, 33, 232, .13), transparent 34%), linear-gradient(180deg, #17131d, #0b090e 70%, #070609);
+  background: radial-gradient(ellipse at 68% 48%, rgba(var(--theme-accent-rgb), .13), transparent 34%), linear-gradient(180deg, var(--theme-main-elevated), var(--theme-main) 70%, var(--theme-main-dark));
   box-shadow: inset 0 18px 45px rgba(169, 121, 255, .025), inset 0 -32px 55px rgba(0, 0, 0, .55)
 }
 
@@ -1237,7 +1268,7 @@
 
 .drill-body {
   border-color: #140c20;
-  background: linear-gradient(180deg, #9b5bf0 0 8%, #6b21e8 9% 32%, #35145f 34% 74%, #17131c 76%);
+  background: linear-gradient(180deg, var(--theme-accent-light) 0 8%, var(--theme-accent) 9% 32%, var(--theme-accent-dark) 34% 74%, var(--theme-main-elevated) 76%);
   box-shadow: inset 0 7px 10px rgba(224, 197, 255, .13), inset 0 -8px 12px rgba(0, 0, 0, .5)
 }
 
@@ -1246,12 +1277,12 @@
 }
 
 .drill-ridge {
-  background: #4d2186;
+  background: var(--theme-accent-deep);
   box-shadow: 1px 0 rgba(218, 188, 255, .16)
 }
 
 .drill-vent {
-  background: repeating-linear-gradient(90deg, #17111e 0 4px, #6b2eae 5px 8px)
+  background: repeating-linear-gradient(90deg, var(--theme-main-elevated) 0 4px, var(--theme-accent-dark) 5px 8px)
 }
 
 .drill-handle {
@@ -1259,8 +1290,8 @@
 }
 
 .status-light {
-  background: #9859f0;
-  box-shadow: 0 0 10px rgba(152, 89, 240, .55)
+  background: var(--theme-accent);
+  box-shadow: 0 0 10px rgba(var(--theme-accent-rgb), .55)
 }
 
 .drill-status.is-warning .status-light {
@@ -1275,11 +1306,11 @@
 }
 
 .cable--e {
-  stroke: #a76be8
+  stroke: var(--theme-accent)
 }
 
 .socket--e {
-  border-color: #a76be8
+  border-color: var(--theme-accent)
 }
 
 .mini-panel.is-compact .mini-panel__header {

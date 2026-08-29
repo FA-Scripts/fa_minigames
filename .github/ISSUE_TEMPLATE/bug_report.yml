@@ -1,0 +1,75 @@
+name: Bug report
+description: Report a reproducible problem with FA Minigames.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a problem. Remove secrets from logs before submitting.
+  - type: input
+    id: version
+    attributes:
+      label: FA Minigames version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: artifacts
+    attributes:
+      label: FiveM artifact and game build
+    validations:
+      required: true
+  - type: dropdown
+    id: game
+    attributes:
+      label: Minigame
+      options:
+        - Drill
+        - Keypad
+        - Skillbar
+        - Sequence
+        - Lockpick
+        - Pattern
+        - Wires
+        - Circuit
+        - Fingerprint
+        - Terminal
+        - Resource or export API
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Include the export call and its options table.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant client or server log
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I tested this with the latest release.
+          required: true
+        - label: I confirmed that `fa_minigames` starts before the consuming resource.
+          required: true
+        - label: I removed license keys, webhooks, tokens, and other secrets from this report.
+          required: true

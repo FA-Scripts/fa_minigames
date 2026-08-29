@@ -14,4 +14,8 @@ files {
     'web/dist/assets/*'
 }
 
+shared_scripts {
+    'config.lua',
+    'locales/*.lua'
+}
 client_script 'client/main.lua'

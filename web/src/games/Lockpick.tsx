@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { clampOption, GamePanel, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, type GameProps } from "./shared";
 
 export function Lockpick({ options, onComplete }: GameProps) {
   const difficulty = clampOption(options, "difficulty", 3, 1, 5);
@@ -79,10 +79,11 @@ export function Lockpick({ options, onComplete }: GameProps) {
     <GamePanel
       variant="lockpick"
       compact={options.compact === true}
-      eyebrow="TUMBLER OVERRIDE // FA-17"
-      title="Feel the binding point"
-      status={`PICK ${Math.round(durability)}%`}
-      instructions="Aim with the mouse or A/D. Hold LMB or SPACE to tension the cylinder."
+      eyebrow={localeText(options, "lockpickEyebrow", "TUMBLER OVERRIDE // FA-17")}
+      title={localeText(options, "lockpickTitle", "Feel the binding point")}
+      status={localeText(options, "lockpickStatus", "PICK {durability}%", { durability: Math.round(durability) })}
+      instructions={localeText(options, "lockpickInstructions", "Aim with the mouse or A/D. Hold LMB or SPACE to tension the cylinder.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div
         className={`lockpick${turning.current ? " is-turning" : ""}`}
@@ -104,13 +105,13 @@ export function Lockpick({ options, onComplete }: GameProps) {
         </div>
         <div className="lockpick__meters">
           <label>
-            TORQUE{" "}
+            {localeText(options, "lockpickTorque", "TORQUE")}{" "}
             <span>
               <i style={{ transform: `scaleX(${tension / 100})` }} />
             </span>
           </label>
           <label>
-            PICK INTEGRITY{" "}
+            {localeText(options, "lockpickIntegrity", "PICK INTEGRITY")}{" "}
             <span>
               <i style={{ transform: `scaleX(${durability / 100})` }} />
             </span>
@@ -128,7 +129,7 @@ export function Lockpick({ options, onComplete }: GameProps) {
             turning.current = false;
           }}
         >
-          HOLD TO TURN
+          {localeText(options, "lockpickTurn", "HOLD TO TURN")}
         </button>
       </div>
     </GamePanel>

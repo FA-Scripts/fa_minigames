@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { clampOption, GamePanel, type GameProps, rangeStyle } from "./shared";
+import { clampOption, GamePanel, localeText, type GameProps, rangeStyle } from "./shared";
 
 export function Skillbar({ options, onComplete }: GameProps) {
   const difficulty = clampOption(options, "difficulty", 3, 1, 5);
@@ -46,10 +46,11 @@ export function Skillbar({ options, onComplete }: GameProps) {
     <GamePanel
       variant="skillbar"
       compact={options.compact === true}
-      eyebrow="SIGNAL CALIBRATOR // FA-02"
-      title="Catch the signal"
-      status={`PASS ${round}/${rounds}`}
-      instructions="Stop the sweep inside the illuminated capture window."
+      eyebrow={localeText(options, "skillbarEyebrow", "SIGNAL CALIBRATOR // FA-02")}
+      title={localeText(options, "skillbarTitle", "Catch the signal")}
+      status={localeText(options, "skillbarStatus", "PASS {round}/{rounds}", { round, rounds })}
+      instructions={localeText(options, "skillbarInstructions", "Stop the sweep inside the illuminated capture window.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <button
         className="skillbar"
@@ -68,10 +69,10 @@ export function Skillbar({ options, onComplete }: GameProps) {
           ))}
         </span>
         <span className="skillbar__zone">
-          <b>LOCK</b>
+          <b>{localeText(options, "skillbarTarget", "LOCK")}</b>
         </span>
         <i className="skillbar__needle" />
-        <small>TRIGGER: LMB / SPACE</small>
+        <small>{localeText(options, "skillbarTrigger", "TRIGGER: LMB / SPACE")}</small>
       </button>
     </GamePanel>
   );

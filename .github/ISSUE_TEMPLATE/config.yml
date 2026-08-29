@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FA Scripts documentation
+    url: https://docs.fascripts.com/scripts/fa-minigames/overview
+    about: Read installation, configuration, API, and troubleshooting guidance first.

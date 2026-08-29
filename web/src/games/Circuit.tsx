@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { clampOption, GamePanel, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, type GameProps } from "./shared";
 
 type Direction = "n" | "e" | "s" | "w";
 type Tile = { exits: Direction[]; rotation: number };
@@ -67,16 +67,17 @@ export function Circuit({ options, onComplete }: GameProps) {
   };
   return (
     <GamePanel
-      eyebrow="POWER ROUTER // FA-24"
-      title="Close the circuit"
-      status={`${moves} TURNS`}
-      instructions="Build one continuous powered route from INPUT to OUTPUT."
+      eyebrow={localeText(options, "circuitEyebrow", "POWER ROUTER // FA-24")}
+      title={localeText(options, "circuitTitle", "Close the circuit")}
+      status={localeText(options, "circuitStatus", "{moves} TURNS", { moves })}
+      instructions={localeText(options, "circuitInstructions", "Build one continuous powered route from INPUT to OUTPUT.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div
         className={`circuit-board${size % 2 === 0 ? " has-left-output" : ""}`}
       >
         <span className="circuit-terminal circuit-terminal--in">
-          INPUT
+          {localeText(options, "circuitInput", "INPUT")}
           <i />
         </span>
         <div
@@ -103,7 +104,7 @@ export function Circuit({ options, onComplete }: GameProps) {
         </div>
         <span className="circuit-terminal circuit-terminal--out">
           <i />
-          OUTPUT
+          {localeText(options, "circuitOutput", "OUTPUT")}
         </span>
       </div>
     </GamePanel>

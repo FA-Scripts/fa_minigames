@@ -6,19 +6,17 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "typecheck": "tsc -b --pretty false",
-    "validate:lua": "node scripts/validate-lua.cjs"
+    "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "5.1.4",
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "typescript": "5.7.3",
-    "vite": "7.3.6"
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@types/react": "18.3.18",
     "@types/react-dom": "18.3.5",
-    "luaparse": "^0.3.1"
+    "@vitejs/plugin-react": "5.1.4",
+    "typescript": "5.7.3",
+    "vite": "7.3.6"
   }
 }

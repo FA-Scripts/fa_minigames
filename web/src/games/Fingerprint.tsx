@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { clampOption, GamePanel, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, type GameProps } from "./shared";
 
 const RIDGES = [
   "M22 226C8 176 10 102 36 57C59 17 102 2 141 16C180 30 202 68 197 112C194 146 179 177 183 219",
@@ -68,10 +68,11 @@ export function Fingerprint({ options, onComplete }: GameProps) {
 
   return (
     <GamePanel
-      eyebrow="FORENSIC READER // FA-31"
-      title="Reconstruct the print"
-      status={scanning ? "SCANNING" : `${aligned}/${slices} ALIGNED`}
-      instructions="Move each horizontal slice until every fingerprint ridge becomes continuous."
+      eyebrow={localeText(options, "fingerprintEyebrow", "FORENSIC READER // FA-31")}
+      title={localeText(options, "fingerprintTitle", "Reconstruct the print")}
+      status={scanning ? localeText(options, "fingerprintScanning", "SCANNING") : localeText(options, "fingerprintStatus", "{aligned}/{slices} ALIGNED", { aligned, slices })}
+      instructions={localeText(options, "fingerprintInstructions", "Move each horizontal slice until every fingerprint ridge becomes continuous.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div className={`fingerprint${scanning ? " is-scanning" : ""}`}>
         <div className="fingerprint__scanner">
@@ -107,7 +108,7 @@ export function Fingerprint({ options, onComplete }: GameProps) {
           </div>
         </div>
         <button className="action-button" disabled={scanning} onClick={scan}>
-          ANALYZE PRINT
+          {localeText(options, "fingerprintAnalyze", "ANALYZE PRINT")}
         </button>
       </div>
     </GamePanel>

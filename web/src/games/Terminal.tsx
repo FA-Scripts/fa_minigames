@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { clampOption, GamePanel, shuffle, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, shuffle, type GameProps } from "./shared";
 
 function makeCode() {
   return Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -73,21 +73,22 @@ export function Terminal({ options, onComplete }: GameProps) {
   const seconds = Math.ceil(clock.remaining / 1000);
   return (
     <GamePanel
-      eyebrow="PACKET SNIFFER // FA-40"
-      title="Trace the access token"
-      status={`TRACE ${round}/${rounds}`}
-      instructions="Find the requested token before the table refreshes or the session expires."
+      eyebrow={localeText(options, "terminalEyebrow", "PACKET SNIFFER // FA-40")}
+      title={localeText(options, "terminalTitle", "Trace the access token")}
+      status={localeText(options, "terminalStatus", "TRACE {round}/{rounds}", { round, rounds })}
+      instructions={localeText(options, "terminalInstructions", "Find the requested token before the table refreshes or the session expires.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div className="terminal">
         <div className="terminal__target">
-          <span>WATCH TOKEN</span>
+          <span>{localeText(options, "terminalWatch", "WATCH TOKEN")}</span>
           <strong>{target}</strong>
           <div>
             <b>
-              TIME {String(Math.floor(seconds / 60)).padStart(2, "0")}:
+              {localeText(options, "terminalTime", "TIME")} {String(Math.floor(seconds / 60)).padStart(2, "0")}:
               {String(seconds % 60).padStart(2, "0")}
             </b>
-            <b>REFRESH {(clock.refresh / 1000).toFixed(1)}s</b>
+            <b>{localeText(options, "terminalRefresh", "REFRESH")} {(clock.refresh / 1000).toFixed(1)}s</b>
           </div>
           <i />
         </div>

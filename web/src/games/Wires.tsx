@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { clampOption, GamePanel, shuffle, type GameProps } from "./shared";
+import { clampOption, GamePanel, localeText, shuffle, type GameProps } from "./shared";
 
 const availableChannels = ["A", "B", "C", "D", "E"];
 type Point = { x: number; y: number };
@@ -54,10 +54,11 @@ export function Wires({ options, onComplete }: GameProps) {
 
   return (
     <GamePanel
-      eyebrow="BYPASS HARNESS // FA-11"
-      title="Patch the live harness"
-      status={`${joined.length}/${channels.length} LINKED`}
-      instructions="Drag each loose lead into the socket carrying the same channel label."
+      eyebrow={localeText(options, "wiresEyebrow", "BYPASS HARNESS // FA-11")}
+      title={localeText(options, "wiresTitle", "Patch the live harness")}
+      status={localeText(options, "wiresStatus", "{joined}/{channels} LINKED", { joined: joined.length, channels: channels.length })}
+      instructions={localeText(options, "wiresInstructions", "Drag each loose lead into the socket carrying the same channel label.")}
+      cancelLabel={localeText(options, "cancel", "CANCEL")}
     >
       <div
         className="wire-board"

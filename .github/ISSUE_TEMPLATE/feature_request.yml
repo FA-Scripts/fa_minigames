@@ -1,0 +1,34 @@
+name: Feature request
+description: Suggest a focused improvement or a new minigame.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Explain what a resource developer or player cannot do today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Suggested export API
+      description: Show the options and result contract when relevant.
+      render: lua
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: The proposal remains framework-independent.
+          required: true
+        - label: The owning server would remain authoritative for rewards and permissions.
+          required: true

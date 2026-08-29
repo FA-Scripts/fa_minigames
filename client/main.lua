@@ -5,6 +5,10 @@ local activeValidator
 local pendingKeypadResult
 
 local DEFAULT_PRESET = 'medium'
+local DEFAULT_THEME = {
+    main = '#0B0B0F',
+    accent = '#8D4FE8'
+}
 local PRESETS = {
     drill = {
         easy = { difficulty = 1, timeout = 60000 },
@@ -58,6 +62,14 @@ local PRESETS = {
     }
 }
 
+local function normalizeHexColor(value, fallback)
+    if type(value) ~= 'string' or not value:match('^#%x%x%x%x%x%x$') then
+        return fallback
+    end
+
+    return value:upper()
+end
+
 local function normalizeOptions(game, options)
     local input = type(options) == 'table' and options or {}
     local requestedPreset = type(options) == 'string' and options or input.difficulty
@@ -80,6 +92,19 @@ local function normalizeOptions(game, options)
         normalized.timeout = math.max(tonumber(normalized.timeLimit) or 60000, 5000) + 1000
     end
 
+    local configuredTheme = type(Config) == 'table' and type(Config.Theme) == 'table' and Config.Theme or {}
+    local requestedTheme = type(input.theme) == 'table' and input.theme or {}
+    local mainColor = normalizeHexColor(configuredTheme.main, DEFAULT_THEME.main)
+    local accentColor = normalizeHexColor(configuredTheme.accent, DEFAULT_THEME.accent)
+
+    normalized.theme = {
+        main = normalizeHexColor(requestedTheme.main, mainColor),
+        accent = normalizeHexColor(requestedTheme.accent, accentColor)
+    }
+    local localeName = type(input.locale) == 'string' and input.locale or Config.Locale
+    local locale = type(Locales) == 'table' and type(Locales[localeName]) == 'table' and Locales[localeName] or Locales.en
+    normalized.locale = locale or {}
+    normalized.localeName = localeName
     normalized.preset = gamePresets and gamePresets[presetName] and presetName or DEFAULT_PRESET
     return normalized
 end
@@ -225,7 +250,7 @@ exports('Terminal', terminal)
 exports('Cancel', cancel)
 
 RegisterNUICallback('complete', function(data, cb)
-    if type(data) ~= 'table' or data.game ~= activeGame then
+    if type(data) ~= 'table' or data.game ~= activeGame or data.requestId ~= activeTimeout then
         cb({ ok = false })
         return
     end
@@ -284,10 +309,10 @@ RegisterNUICallback('complete', function(data, cb)
     })
 end)
 
-RegisterNUICallback('keypadFeedbackComplete', function(_, cb)
+RegisterNUICallback('keypadFeedbackComplete', function(data, cb)
     cb({ ok = true })
 
-    if activeGame ~= 'keypad' or not pendingKeypadResult then return end
+    if activeGame ~= 'keypad' or data.requestId ~= activeTimeout or not pendingKeypadResult then return end
     finishGame(pendingKeypadResult)
 end)
 
