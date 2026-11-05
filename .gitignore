@@ -8,4 +8,4 @@ web/scripts/test-focus.mjs
 web/scripts/test-nui.mjs
 web/scripts/test-theme.mjs
 web/tests/*
-docs/*
+docs/TESTING.md
