@@ -18,9 +18,6 @@
   --theme-accent-deep: #442670;
   --theme-accent-rgb: 141, 79, 232;
   --theme-accent-ink: #ffffff;
-  --fa-purple: var(--theme-accent);
-  --fa-black: var(--theme-main);
-  --fa-surface: var(--theme-main-soft);
 }
 
 * {
@@ -98,7 +95,7 @@ button {
   background:
     repeating-linear-gradient(105deg, transparent 0 5px, rgba(255, 255, 255, .009) 6px, transparent 7px 12px),
     linear-gradient(145deg, rgba(255, 255, 255, .045), transparent 30%),
-    var(--fa-black);
+    var(--theme-main);
   box-shadow:
     0 34px 90px rgba(0, 0, 0, .74),
     0 0 70px rgba(var(--theme-accent-rgb), .1),
@@ -233,7 +230,7 @@ button {
   border: 1px solid rgba(255, 255, 255, .065);
   border-bottom-color: rgba(255, 255, 255, .1);
   border-radius: 14px;
-  background: linear-gradient(180deg, #0c0c11, var(--fa-surface));
+  background: linear-gradient(180deg, #0c0c11, var(--theme-main-soft));
   box-shadow: inset 0 3px 12px rgba(0, 0, 0, .58), 0 1px 0 rgba(255, 255, 255, .025);
 }
 
@@ -335,10 +332,10 @@ button {
 }
 
 .fa-key:hover,
-.fa-key:focus-visible {
+html[data-focus-navigation="true"] .fa-key:focus-visible {
   border-color: rgba(var(--theme-accent-rgb), .62);
-  color: #b78dff;
-  background: linear-gradient(180deg, #1b1922, #121117);
+  color: var(--theme-accent-light);
+  background: linear-gradient(180deg, var(--theme-main-soft), #121117);
   box-shadow: 0 3px 0 #08070b, 0 5px 12px rgba(0, 0, 0, .34), inset 0 0 18px rgba(var(--theme-accent-rgb), .08);
   outline: none;
 }
@@ -363,22 +360,22 @@ button {
 .fa-key--confirm {
   display: grid;
   place-items: center;
-  border-color: #7d39ed;
+  border-color: var(--theme-accent-dark);
   background: linear-gradient(180deg, var(--theme-accent-light), var(--theme-accent));
   box-shadow: 0 3px 0 var(--theme-accent-deep), 0 8px 22px rgba(var(--theme-accent-rgb), .26), inset 0 1px 0 rgba(255, 255, 255, .2);
   transition: transform .13s ease, border-color .13s ease, color .13s ease;
 }
 
 .fa-key--confirm:hover,
-.fa-key--confirm:focus-visible {
-  border-color: #a778ff;
+html[data-focus-navigation="true"] .fa-key--confirm:focus-visible {
+  border-color: var(--theme-accent-light);
   color: #fff;
   background: linear-gradient(180deg, var(--theme-accent-light), var(--theme-accent));
   box-shadow: 0 3px 0 var(--theme-accent-deep), 0 8px 22px rgba(var(--theme-accent-rgb), .26), inset 0 1px 0 rgba(255, 255, 255, .2);
 }
 
 .fa-key--confirm:active {
-  box-shadow: 0 0 0 #3a0f83, inset 0 2px 6px rgba(44, 8, 92, .5);
+  box-shadow: 0 0 0 var(--theme-accent-deep), inset 0 2px 6px rgba(var(--theme-accent-rgb), .5);
 }
 
 .fa-key__arrow {

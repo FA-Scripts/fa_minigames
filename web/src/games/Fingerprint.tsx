@@ -82,7 +82,7 @@ export function Fingerprint({ options, onComplete }: GameProps) {
               <div className="fingerprint__slice" key={index}>
                 <button
                   onClick={() => shift(index, -1)}
-                  aria-label={`Move fingerprint slice ${index + 1} left`}
+                  aria-label={localeText(options, "fingerprintLeft", "Move fingerprint slice {slice} left", { slice: index + 1 })}
                 >
                   <svg viewBox="0 0 20 20">
                     <path d="m13 4-6 6 6 6" />
@@ -97,7 +97,7 @@ export function Fingerprint({ options, onComplete }: GameProps) {
                 </span>
                 <button
                   onClick={() => shift(index, 1)}
-                  aria-label={`Move fingerprint slice ${index + 1} right`}
+                  aria-label={localeText(options, "fingerprintRight", "Move fingerprint slice {slice} right", { slice: index + 1 })}
                 >
                   <svg viewBox="0 0 20 20">
                     <path d="m7 4 6 6-6 6" />

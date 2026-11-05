@@ -1,12 +1,16 @@
 {
   "name": "fa-minigames-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "typecheck": "tsc -b --pretty false"
+    "typecheck": "tsc -b --pretty false",
+    "predev": "node scripts/sync-preview.mjs",
+    "prebuild": "node scripts/sync-preview.mjs",
+    "pretypecheck": "node scripts/sync-preview.mjs",
+    "test": "node scripts/sync-preview.mjs && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "react": "18.3.1",
@@ -16,6 +20,7 @@
     "@types/react": "18.3.18",
     "@types/react-dom": "18.3.5",
     "@vitejs/plugin-react": "5.1.4",
+    "fengari": "0.1.5",
     "typescript": "5.7.3",
     "vite": "7.3.6"
   }

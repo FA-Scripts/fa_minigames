@@ -2,6 +2,8 @@ local activeGame
 local activePromise
 local activeTimeout
 local activeValidator
+local validatingRequest
+local requestSequence = 0
 local pendingKeypadResult
 
 local DEFAULT_PRESET = 'medium'
@@ -55,12 +57,42 @@ local PRESETS = {
         medium = { slices = 5, timeout = 35000 },
         hard = { slices = 7, timeout = 30000 }
     },
+    networkhack = {
+        easy = { size = 4, previewDuration = 3000, maxErrors = 2, timeout = 45000 },
+        medium = { size = 5, previewDuration = 2200, maxErrors = 1, timeout = 40000 },
+        hard = { size = 6, previewDuration = 1500, maxErrors = 0, timeout = 35000 }
+    },
+    safecracker = {
+        easy = { positions = 3, tolerance = 10, maxErrors = 3, timeout = 60000 },
+        medium = { positions = 4, tolerance = 7, maxErrors = 2, timeout = 55000 },
+        hard = { positions = 5, tolerance = 4, maxErrors = 1, timeout = 50000 }
+    },
+    frequencytuning = {
+        easy = { rounds = 1, tolerance = 8, holdDuration = 1000, timeout = 40000 },
+        medium = { rounds = 2, tolerance = 5, holdDuration = 1500, timeout = 45000 },
+        hard = { rounds = 3, tolerance = 3, holdDuration = 2000, timeout = 50000 }
+    },
     terminal = {
         easy = { entries = 12, rounds = 2, refreshInterval = 10000, timeLimit = 60000, timeout = 61000 },
         medium = { entries = 20, rounds = 3, refreshInterval = 10000, timeLimit = 60000, timeout = 61000 },
         hard = { entries = 28, rounds = 4, refreshInterval = 7000, timeLimit = 60000, timeout = 61000 }
     }
 }
+
+local OPTION_LIMITS = {
+    networkhack = { size = { 4, 6, true }, previewDuration = { 500, 10000, true }, maxErrors = { 0, 10, true } },
+    safecracker = { positions = { 1, 8, true }, tolerance = { 2, 20 }, maxErrors = { 0, 10, true } },
+    frequencytuning = { rounds = { 1, 8, true }, tolerance = { 1, 15 }, holdDuration = { 250, 10000, true } }
+}
+
+local function finiteNumber(value, fallback, minimum, maximum, integer)
+    if type(value) ~= 'number' or value ~= value or value == math.huge or value == -math.huge then
+        value = fallback
+    end
+
+    value = math.min(maximum, math.max(minimum, value))
+    return integer and math.floor(value + 0.5) or value
+end
 
 local function normalizeHexColor(value, fallback)
     if type(value) ~= 'string' or not value:match('^#%x%x%x%x%x%x$') then
@@ -88,9 +120,16 @@ local function normalizeOptions(game, options)
         end
     end
 
-    if game == 'terminal' and input.timeLimit ~= nil and input.timeout == nil then
-        normalized.timeout = math.max(tonumber(normalized.timeLimit) or 60000, 5000) + 1000
+    for key, limits in pairs(OPTION_LIMITS[game] or {}) do
+        normalized[key] = finiteNumber(normalized[key], preset[key], limits[1], limits[2], limits[3])
     end
+
+    if game == 'terminal' and input.timeLimit ~= nil and input.timeout == nil then
+        normalized.timeout = finiteNumber(tonumber(normalized.timeLimit), 60000, 5000, 300000, true) + 1000
+    end
+
+    local maximumTimeout = OPTION_LIMITS[game] and 600000 or math.huge
+    normalized.timeout = finiteNumber(tonumber(normalized.timeout), preset.timeout, 5000, maximumTimeout, true)
 
     local configuredTheme = type(Config) == 'table' and type(Config.Theme) == 'table' and Config.Theme or {}
     local requestedTheme = type(input.theme) == 'table' and input.theme or {}
@@ -112,15 +151,17 @@ end
 local function finishGame(result)
     if not activePromise then return false end
 
+    local requestId = activeTimeout
     local pending = activePromise
     activePromise = nil
     activeGame = nil
     activeTimeout = nil
     activeValidator = nil
+    validatingRequest = nil
     pendingKeypadResult = nil
 
     SetNuiFocus(false, false)
-    SendNUIMessage({ action = 'close' })
+    SendNUIMessage({ action = 'close', requestId = requestId })
     pending:resolve(result)
     return true
 end
@@ -146,7 +187,8 @@ local function runGame(game, options)
 
     options = normalizeOptions(game, options)
     local timeout = math.max(tonumber(options.timeout) or 45000, 5000)
-    local requestId = ('%s:%s:%s'):format(game, GetGameTimer(), math.random(1000, 9999))
+    requestSequence = requestSequence + 1
+    local requestId = ('%s:%s:%s'):format(game, GetGameTimer(), requestSequence)
     local nuiOptions = {}
 
     for key, value in pairs(options) do
@@ -235,7 +277,91 @@ local function wires(options) return playStandardGame('wires', options) end
 local function circuit(options) return playStandardGame('circuit', options) end
 local function fingerprint(options) return playStandardGame('fingerprint', options) end
 local function terminal(options) return playStandardGame('terminal', options) end
+local function networkhack(options) return playStandardGame('networkhack', options) end
+local function safecracker(options) return playStandardGame('safecracker', options) end
+local function frequencytuning(options) return playStandardGame('frequencytuning', options) end
 local function cancel() cancelActiveGame('cancelled') end
+
+local DEBUG_GAMES = {
+    drill = drill,
+    keypad = keypad,
+    skillbar = skillbar,
+    sequence = sequence,
+    lockpick = lockpick,
+    pattern = pattern,
+    wires = wires,
+    circuit = circuit,
+    fingerprint = fingerprint,
+    terminal = terminal,
+    networkhack = networkhack,
+    safecracker = safecracker,
+    frequencytuning = frequencytuning
+}
+
+local DEBUG_PRESETS = {
+    easy = true,
+    medium = true,
+    hard = true
+}
+
+local function debugMessage(message)
+    print(('[fa_minigames] %s'):format(message))
+    TriggerEvent('chat:addMessage', {
+        color = { 141, 79, 232 },
+        args = { 'FA Minigames', message }
+    })
+end
+
+if Config.Debug == true then
+    RegisterCommand('faminigame', function(_, args)
+        local gameName = type(args[1]) == 'string' and args[1]:lower() or nil
+        local game = gameName and DEBUG_GAMES[gameName] or nil
+
+        if not game then
+            debugMessage('Usage: /faminigame <game> [easy|medium|hard] [compact]')
+            debugMessage('Games: drill, keypad, skillbar, sequence, lockpick, pattern, wires, circuit, fingerprint, terminal, networkhack, safecracker, frequencytuning')
+            return
+        end
+
+        local preset = type(args[2]) == 'string' and args[2]:lower() or DEFAULT_PRESET
+
+        if not DEBUG_PRESETS[preset] then
+            debugMessage(('Unknown difficulty "%s". Use easy, medium or hard.'):format(preset))
+            return
+        end
+
+        local compactValue = type(args[3]) == 'string' and args[3]:lower() or nil
+        local options = {
+            difficulty = preset,
+            compact = compactValue == 'compact' or compactValue == 'true' or compactValue == '1'
+        }
+
+        CreateThread(function()
+            debugMessage(('Starting %s (%s%s).'):format(
+                gameName,
+                preset,
+                options.compact and ', compact' or ''
+            ))
+
+            local result = game(options)
+
+            if gameName == 'keypad' then
+                debugMessage(('Keypad finished: submitted=%s, code=%s, reason=%s'):format(
+                    tostring(result.submitted == true),
+                    result.code or 'none',
+                    result.reason or 'unknown'
+                ))
+                return
+            end
+
+            debugMessage(('%s finished: success=%s, reason=%s'):format(
+                gameName,
+                tostring(result.success == true),
+                result.reason or 'unknown'
+            ))
+        end)
+    end, false)
+end
 
 exports('Drill', drill)
 exports('Keypad', keypad)
@@ -247,10 +373,13 @@ exports('Wires', wires)
 exports('Circuit', circuit)
 exports('Fingerprint', fingerprint)
 exports('Terminal', terminal)
+exports('NetworkHack', networkhack)
+exports('Safecracker', safecracker)
+exports('FrequencyTuning', frequencytuning)
 exports('Cancel', cancel)
 
 RegisterNUICallback('complete', function(data, cb)
-    if type(data) ~= 'table' or data.game ~= activeGame or data.requestId ~= activeTimeout then
+    if type(data) ~= 'table' or not activePromise or data.game ~= activeGame or data.requestId ~= activeTimeout then
         cb({ ok = false })
         return
     end
@@ -272,8 +401,22 @@ RegisterNUICallback('complete', function(data, cb)
         return
     end
 
+    if pendingKeypadResult or validatingRequest == activeTimeout then
+        cb({ ok = false, close = false })
+        return
+    end
+
     if activeValidator then
+        local requestId = activeTimeout
+        validatingRequest = requestId
         local validated, response = pcall(activeValidator, code)
+
+        if activeTimeout ~= requestId then
+            cb({ ok = false, close = true })
+            return
+        end
+
+        validatingRequest = nil
         response = validated and type(response) == 'table' and response or {
             success = false,
             close = true,
@@ -310,13 +453,21 @@ RegisterNUICallback('complete', function(data, cb)
 end)
 
 RegisterNUICallback('keypadFeedbackComplete', function(data, cb)
-    cb({ ok = true })
+    if type(data) ~= 'table' or activeGame ~= 'keypad' or data.requestId ~= activeTimeout or not pendingKeypadResult then
+        cb({ ok = false })
+        return
+    end
 
-    if activeGame ~= 'keypad' or data.requestId ~= activeTimeout or not pendingKeypadResult then return end
+    cb({ ok = true })
     finishGame(pendingKeypadResult)
 end)
 
-RegisterNUICallback('cancel', function(_, cb)
+RegisterNUICallback('cancel', function(data, cb)
+    if type(data) ~= 'table' or not activePromise or data.requestId ~= activeTimeout then
+        cb({ ok = false })
+        return
+    end
+
     cb({ ok = true })
     cancelActiveGame('cancelled')
 end)

@@ -1,0 +1,455 @@
+{
+  "presets": {
+    "drill": {
+      "easy": {
+        "difficulty": 1,
+        "timeout": 60000
+      },
+      "medium": {
+        "difficulty": 2,
+        "timeout": 45000
+      },
+      "hard": {
+        "difficulty": 4,
+        "timeout": 35000
+      }
+    },
+    "keypad": {
+      "easy": {
+        "timeout": 45000
+      },
+      "medium": {
+        "timeout": 30000
+      },
+      "hard": {
+        "timeout": 20000
+      }
+    },
+    "skillbar": {
+      "easy": {
+        "difficulty": 1,
+        "rounds": 2,
+        "timeout": 45000
+      },
+      "medium": {
+        "difficulty": 3,
+        "rounds": 3,
+        "timeout": 35000
+      },
+      "hard": {
+        "difficulty": 5,
+        "rounds": 4,
+        "timeout": 30000
+      }
+    },
+    "sequence": {
+      "easy": {
+        "length": 3,
+        "previewInterval": 550,
+        "timeout": 45000
+      },
+      "medium": {
+        "length": 5,
+        "previewInterval": 420,
+        "timeout": 35000
+      },
+      "hard": {
+        "length": 7,
+        "previewInterval": 320,
+        "timeout": 30000
+      }
+    },
+    "lockpick": {
+      "easy": {
+        "difficulty": 1,
+        "timeout": 45000
+      },
+      "medium": {
+        "difficulty": 3,
+        "timeout": 35000
+      },
+      "hard": {
+        "difficulty": 5,
+        "timeout": 30000
+      }
+    },
+    "pattern": {
+      "easy": {
+        "length": 4,
+        "previewDuration": 2500,
+        "timeout": 45000
+      },
+      "medium": {
+        "length": 6,
+        "previewDuration": 1800,
+        "timeout": 35000
+      },
+      "hard": {
+        "length": 8,
+        "previewDuration": 1300,
+        "timeout": 30000
+      }
+    },
+    "wires": {
+      "easy": {
+        "channels": 3,
+        "timeout": 45000
+      },
+      "medium": {
+        "channels": 4,
+        "timeout": 35000
+      },
+      "hard": {
+        "channels": 5,
+        "timeout": 30000
+      }
+    },
+    "circuit": {
+      "easy": {
+        "size": 3,
+        "timeout": 60000
+      },
+      "medium": {
+        "size": 4,
+        "timeout": 50000
+      },
+      "hard": {
+        "size": 5,
+        "timeout": 40000
+      }
+    },
+    "fingerprint": {
+      "easy": {
+        "slices": 3,
+        "timeout": 45000
+      },
+      "medium": {
+        "slices": 5,
+        "timeout": 35000
+      },
+      "hard": {
+        "slices": 7,
+        "timeout": 30000
+      }
+    },
+    "networkhack": {
+      "easy": {
+        "size": 4,
+        "previewDuration": 3000,
+        "maxErrors": 2,
+        "timeout": 45000
+      },
+      "medium": {
+        "size": 5,
+        "previewDuration": 2200,
+        "maxErrors": 1,
+        "timeout": 40000
+      },
+      "hard": {
+        "size": 6,
+        "previewDuration": 1500,
+        "maxErrors": 0,
+        "timeout": 35000
+      }
+    },
+    "safecracker": {
+      "easy": {
+        "positions": 3,
+        "tolerance": 10,
+        "maxErrors": 3,
+        "timeout": 60000
+      },
+      "medium": {
+        "positions": 4,
+        "tolerance": 7,
+        "maxErrors": 2,
+        "timeout": 55000
+      },
+      "hard": {
+        "positions": 5,
+        "tolerance": 4,
+        "maxErrors": 1,
+        "timeout": 50000
+      }
+    },
+    "frequencytuning": {
+      "easy": {
+        "rounds": 1,
+        "tolerance": 8,
+        "holdDuration": 1000,
+        "timeout": 40000
+      },
+      "medium": {
+        "rounds": 2,
+        "tolerance": 5,
+        "holdDuration": 1500,
+        "timeout": 45000
+      },
+      "hard": {
+        "rounds": 3,
+        "tolerance": 3,
+        "holdDuration": 2000,
+        "timeout": 50000
+      }
+    },
+    "terminal": {
+      "easy": {
+        "entries": 12,
+        "rounds": 2,
+        "refreshInterval": 10000,
+        "timeLimit": 60000,
+        "timeout": 61000
+      },
+      "medium": {
+        "entries": 20,
+        "rounds": 3,
+        "refreshInterval": 10000,
+        "timeLimit": 60000,
+        "timeout": 61000
+      },
+      "hard": {
+        "entries": 28,
+        "rounds": 4,
+        "refreshInterval": 7000,
+        "timeLimit": 60000,
+        "timeout": 61000
+      }
+    }
+  },
+  "locales": {
+    "en": {
+      "cancel": "CANCEL",
+      "confirm": "CONFIRM",
+      "drillTitle": "KEEP IT STEADY",
+      "drillKicker": "DEPOSIT LOCK // 4 PIN",
+      "drillAlign": "LINE UP PIN {pin}",
+      "drillSpinUp": "SPIN UP THE DRILL",
+      "drillCutting": "CUTTING PIN {pin}",
+      "drillPressure": "ADD PRESSURE GENTLY",
+      "drillTooMuchPressure": "TOO MUCH PRESSURE",
+      "drillOverheating": "BACK OFF - BIT OVERHEATING",
+      "drillSpin": "SPIN",
+      "drillMovePressure": "MOVE MOUSE PRESSURE",
+      "drillHint": "Let the bit bite. Push gently and pull back when the steel turns red.",
+      "keypadTitle": "Safe",
+      "keypadKicker": "SECURITY KEYPAD",
+      "keypadPrompt": "ENTER SAFE CODE",
+      "keypadClear": "CLR",
+      "skillbarTitle": "Catch the signal",
+      "skillbarEyebrow": "SIGNAL CALIBRATOR // FA-02",
+      "skillbarStatus": "PASS {round}/{rounds}",
+      "skillbarInstructions": "Stop the sweep inside the illuminated capture window.",
+      "skillbarTarget": "LOCK",
+      "skillbarTrigger": "TRIGGER: LMB / SPACE",
+      "sequenceTitle": "Repeat the sequence",
+      "sequenceEyebrow": "MEMORY RELAY // FA-06",
+      "sequenceRecording": "RECORDING",
+      "sequenceInput": "INPUT {entered}/{length}",
+      "sequenceInstructions": "Observe the relay pulse, then reproduce the complete sequence.",
+      "lockpickTitle": "Feel the binding point",
+      "lockpickEyebrow": "TUMBLER OVERRIDE // FA-17",
+      "lockpickStatus": "PICK {durability}%",
+      "lockpickInstructions": "Aim with the mouse or A/D. Hold LMB or SPACE to tension the cylinder.",
+      "lockpickTorque": "TORQUE",
+      "lockpickIntegrity": "PICK INTEGRITY",
+      "lockpickTurn": "HOLD TO TURN",
+      "patternTitle": "Restore the pattern",
+      "patternEyebrow": "ACCESS MATRIX",
+      "patternMemorize": "MEMORIZE",
+      "patternInstructions": "Remember every active cell, then select the same set.",
+      "wiresTitle": "Patch the live harness",
+      "wiresEyebrow": "BYPASS HARNESS // FA-11",
+      "wiresStatus": "{joined}/{channels} LINKED",
+      "wiresInstructions": "Drag each loose lead into the socket carrying the same channel label.",
+      "circuitTitle": "Close the circuit",
+      "circuitEyebrow": "POWER ROUTER // FA-24",
+      "circuitStatus": "{moves} TURNS",
+      "circuitInstructions": "Build one continuous powered route from INPUT to OUTPUT.",
+      "circuitInput": "INPUT",
+      "circuitOutput": "OUTPUT",
+      "fingerprintTitle": "Reconstruct the print",
+      "fingerprintEyebrow": "FORENSIC READER // FA-31",
+      "fingerprintStatus": "{aligned}/{slices} ALIGNED",
+      "fingerprintScanning": "SCANNING",
+      "fingerprintInstructions": "Move each horizontal slice until every fingerprint ridge becomes continuous.",
+      "fingerprintAnalyze": "ANALYZE PRINT",
+      "terminalTitle": "Trace the access token",
+      "terminalEyebrow": "PACKET SNIFFER // FA-40",
+      "terminalStatus": "TRACE {round}/{rounds}",
+      "terminalInstructions": "Find the requested token before the table refreshes or the session expires.",
+      "terminalWatch": "WATCH TOKEN",
+      "terminalTime": "TIME",
+      "terminalRefresh": "REFRESH",
+      "networkTitle": "Trace the safe route",
+      "networkPreview": "MEMORIZE THE ROUTE",
+      "networkStatus": "{errors}/{maxErrors} ERRORS",
+      "networkInstructions": "Memorize the route. Select adjacent nodes with the mouse or arrow keys and Enter.",
+      "networkGrid": "Network nodes",
+      "networkNode": "Node {node}",
+      "networkHint": "Safe nodes stay revealed. Follow the route in order.",
+      "networkAlarm": "ALARM - that node is outside the route. Try another neighbor.",
+      "safeTitle": "Find the combination",
+      "safeStatus": "{completed}/{positions} POSITIONS - {errors}/{maxErrors} ERRORS",
+      "safeInstructions": "Turn with A/D or drag the dial. Follow the direction. Confirm near the binding point with Enter.",
+      "safeDial": "Safe dial",
+      "safeWrongDirection": "WRONG DIRECTION - turn the dial as indicated.",
+      "safeAccepted": "POSITION ACCEPTED",
+      "safeMiss": "POSITION MISSED - follow the direction and proximity indicator.",
+      "safeClockwise": "CLOCKWISE - D",
+      "safeCounterclockwise": "COUNTERCLOCKWISE - A",
+      "safeProximity": "BINDING PROXIMITY",
+      "safeHint": "A stronger signal means the binding point is closer.",
+      "frequencyTitle": "Tune the carrier",
+      "frequencyStatus": "CHANNEL {round}/{rounds}",
+      "frequencyInstructions": "Match frequency and phase to the reference. Keep both aligned until the signal locks.",
+      "frequencyReference": "REFERENCE",
+      "frequencyCurrent": "YOUR SIGNAL",
+      "frequencyWave": "Reference and current signal waveforms",
+      "frequencyFrequency": "FREQUENCY",
+      "frequencyPhase": "PHASE",
+      "frequencyHolding": "HOLD STEADY",
+      "frequencySearching": "SEARCHING FOR ALIGNMENT",
+      "circuitTile": "Rotate circuit tile {tile}",
+      "fingerprintLeft": "Move fingerprint slice {slice} left",
+      "fingerprintRight": "Move fingerprint slice {slice} right",
+      "patternCell": "Cell {cell}",
+      "drillLabel": "Drill minigame",
+      "drillPins": "{pins} of 4 pins cleared",
+      "drillAccessible": "Difficulty level {difficulty}. Drill heat {heat} percent. Progress {progress} percent.",
+      "keypadLabel": "{title} keypad",
+      "keypadDigits": "{digits} of 4 digits entered",
+      "keypadDigit": "Digit {digit}",
+      "keypadConfirm": "Confirm code",
+      "keypadClearLabel": "Clear code",
+      "previewGame": "Game",
+      "previewPreset": "Difficulty",
+      "previewLocale": "Language",
+      "previewRestart": "Restart",
+      "previewResult": "Result",
+      "previewRunning": "Game in progress",
+      "previewTitle": "Minigame preview",
+      "networkEyebrow": "NETWORK // FA-51",
+      "networkInput": "IN",
+      "networkOutput": "OUT",
+      "safeEyebrow": "VAULT // FA-62",
+      "frequencyEyebrow": "SIGNAL // FA-73"
+    },
+    "pl": {
+      "cancel": "ANULUJ",
+      "confirm": "POTWIERDŹ",
+      "drillTitle": "UTRZYMAJ STABILNOŚĆ",
+      "drillKicker": "ZAMEK DEPOZYTU // 4 ZAPADKI",
+      "drillAlign": "USTAW ZAPADKĘ {pin}",
+      "drillSpinUp": "ROZKRĘĆ WIERTŁO",
+      "drillCutting": "WIERCENIE ZAPADKI {pin}",
+      "drillPressure": "DELIKATNIE ZWIĘKSZ NACISK",
+      "drillTooMuchPressure": "ZA DUŻY NACISK",
+      "drillOverheating": "COFNIJ - WIERTŁO SIĘ PRZEGRZEWA",
+      "drillSpin": "OBROTY",
+      "drillMovePressure": "NACISK RUCHEM MYSZY",
+      "drillHint": "Wierć delikatnie. Cofnij wiertło, gdy metal zrobi się czerwony.",
+      "keypadTitle": "Sejf",
+      "keypadKicker": "KLAWIATURA ZABEZPIECZAJĄCA",
+      "keypadPrompt": "WPISZ KOD SEJFU",
+      "keypadClear": "WYC",
+      "skillbarTitle": "Złap sygnał",
+      "skillbarEyebrow": "KALIBRATOR SYGNAŁU // FA-02",
+      "skillbarStatus": "PRÓBA {round}/{rounds}",
+      "skillbarInstructions": "Zatrzymaj wskaźnik w podświetlonym obszarze.",
+      "skillbarTarget": "CEL",
+      "skillbarTrigger": "AKTYWUJ: LPM / SPACJA",
+      "sequenceTitle": "Powtórz sekwencję",
+      "sequenceEyebrow": "PRZEKAŹNIK PAMIĘCI // FA-06",
+      "sequenceRecording": "ZAPAMIĘTAJ",
+      "sequenceInput": "WPROWADZONO {entered}/{length}",
+      "sequenceInstructions": "Obserwuj sygnały i odtwórz pełną sekwencję.",
+      "lockpickTitle": "Znajdź punkt oporu",
+      "lockpickEyebrow": "OBEJŚCIE ZAMKA // FA-17",
+      "lockpickStatus": "WYTRYCH {durability}%",
+      "lockpickInstructions": "Celuj myszą lub A/D. Przytrzymaj LPM lub SPACJĘ, aby przekręcić zamek.",
+      "lockpickTorque": "NAPRĘŻENIE",
+      "lockpickIntegrity": "STAN WYTRYCHA",
+      "lockpickTurn": "PRZYTRZYMAJ, ABY OBRÓCIĆ",
+      "patternTitle": "Odtwórz wzór",
+      "patternEyebrow": "MATRYCA DOSTĘPU",
+      "patternMemorize": "ZAPAMIĘTAJ",
+      "patternInstructions": "Zapamiętaj aktywne pola i zaznacz ten sam zestaw.",
+      "wiresTitle": "Połącz przewody",
+      "wiresEyebrow": "WIĄZKA OBEJŚCIA // FA-11",
+      "wiresStatus": "POŁĄCZONO {joined}/{channels}",
+      "wiresInstructions": "Przeciągnij każdy przewód do gniazda z tą samą etykietą.",
+      "circuitTitle": "Zamknij obwód",
+      "circuitEyebrow": "ROZDZIELNIA // FA-24",
+      "circuitStatus": "OBROTY: {moves}",
+      "circuitInstructions": "Utwórz ciągłe połączenie między WEJŚCIEM i WYJŚCIEM.",
+      "circuitInput": "WEJŚCIE",
+      "circuitOutput": "WYJŚCIE",
+      "fingerprintTitle": "Odtwórz odcisk",
+      "fingerprintEyebrow": "CZYTNIK KRYMINALISTYCZNY // FA-31",
+      "fingerprintStatus": "DOPASOWANO {aligned}/{slices}",
+      "fingerprintScanning": "SKANOWANIE",
+      "fingerprintInstructions": "Przesuwaj fragmenty, aż linie odcisku utworzą całość.",
+      "fingerprintAnalyze": "ANALIZUJ ODCISK",
+      "terminalTitle": "Znajdź token dostępu",
+      "terminalEyebrow": "ANALIZATOR PAKIETÓW // FA-40",
+      "terminalStatus": "ŚLAD {round}/{rounds}",
+      "terminalInstructions": "Znajdź wskazany token przed odświeżeniem tabeli lub końcem czasu.",
+      "terminalWatch": "SZUKANY TOKEN",
+      "terminalTime": "CZAS",
+      "terminalRefresh": "ODŚWIEŻENIE",
+      "networkTitle": "Odtwórz bezpieczną trasę",
+      "networkPreview": "ZAPAMIĘTAJ TRASĘ",
+      "networkStatus": "BŁĘDY: {errors}/{maxErrors}",
+      "networkInstructions": "Zapamiętaj trasę. Wybieraj sąsiednie węzły myszą lub strzałkami i Enterem.",
+      "networkGrid": "Węzły sieci",
+      "networkNode": "Węzeł {node}",
+      "networkHint": "Poprawne węzły pozostają widoczne. Zachowaj kolejność trasy.",
+      "networkAlarm": "ALARM - ten węzeł nie należy do trasy. Spróbuj innego sąsiada.",
+      "safeTitle": "Odkryj kombinację",
+      "safeStatus": "POZYCJE: {completed}/{positions} - BŁĘDY: {errors}/{maxErrors}",
+      "safeInstructions": "Obracaj A/D lub przeciągaj pokrętło we wskazanym kierunku. Potwierdź punkt oporu Enterem.",
+      "safeDial": "Pokrętło sejfu",
+      "safeWrongDirection": "ZŁY KIERUNEK - obracaj pokrętło zgodnie ze wskazaniem.",
+      "safeAccepted": "POZYCJA ZALICZONA",
+      "safeMiss": "NIETRAFIONA POZYCJA - sprawdź kierunek i wskaźnik bliskości.",
+      "safeClockwise": "ZGODNIE Z ZEGAREM - D",
+      "safeCounterclockwise": "PRZECIWNIE DO ZEGARA - A",
+      "safeProximity": "BLISKOŚĆ PUNKTU OPORU",
+      "safeHint": "Silniejszy sygnał oznacza bliższy punkt oporu.",
+      "frequencyTitle": "Dostrój sygnał",
+      "frequencyStatus": "KANAŁ {round}/{rounds}",
+      "frequencyInstructions": "Dopasuj częstotliwość i fazę do wzorca. Utrzymaj oba ustawienia do zablokowania sygnału.",
+      "frequencyReference": "WZORZEC",
+      "frequencyCurrent": "TWÓJ SYGNAŁ",
+      "frequencyWave": "Wykres sygnału wzorcowego i aktualnego",
+      "frequencyFrequency": "CZĘSTOTLIWOŚĆ",
+      "frequencyPhase": "FAZA",
+      "frequencyHolding": "UTRZYMAJ USTAWIENIE",
+      "frequencySearching": "SZUKANIE DOPASOWANIA",
+      "circuitTile": "Obróć pole obwodu {tile}",
+      "fingerprintLeft": "Przesuń fragment odcisku {slice} w lewo",
+      "fingerprintRight": "Przesuń fragment odcisku {slice} w prawo",
+      "patternCell": "Pole {cell}",
+      "drillLabel": "Minigra wiercenia",
+      "drillPins": "Przewiercono {pins} z 4 zapadek",
+      "drillAccessible": "Poziom trudności {difficulty}. Temperatura wiertła {heat} procent. Postęp {progress} procent.",
+      "keypadLabel": "Klawiatura: {title}",
+      "keypadDigits": "Wpisano {digits} z 4 cyfr",
+      "keypadDigit": "Cyfra {digit}",
+      "keypadConfirm": "Potwierdź kod",
+      "keypadClearLabel": "Wyczyść kod",
+      "previewGame": "Gra",
+      "previewPreset": "Trudność",
+      "previewLocale": "Język",
+      "previewRestart": "Uruchom ponownie",
+      "previewResult": "Wynik",
+      "previewRunning": "Gra w toku",
+      "previewTitle": "Podgląd minigier",
+      "networkEyebrow": "SIEĆ // FA-51",
+      "networkInput": "WE",
+      "networkOutput": "WY",
+      "safeEyebrow": "SEJF // FA-62",
+      "frequencyEyebrow": "SYGNAŁ // FA-73"
+    }
+  }
+}

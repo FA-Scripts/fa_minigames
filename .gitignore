@@ -2,4 +2,10 @@ web/node_modules/
 web/*.tsbuildinfo
 .DS_Store
 Thumbs.db
-!release/*
+web/test-artifacts/*
+web/scripts/test-browser.mjs
+web/scripts/test-focus.mjs
+web/scripts/test-nui.mjs
+web/scripts/test-theme.mjs
+web/tests/*
+docs/*

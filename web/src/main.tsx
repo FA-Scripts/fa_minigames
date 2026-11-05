@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import "./games.css";
 import {
+  NetworkHack,
+  Safecracker,
+  FrequencyTuning,
   Circuit,
   Fingerprint,
   Lockpick,
@@ -12,6 +15,8 @@ import {
   Terminal,
   Wires,
 } from "./games";
+import previewData from "./preview-data.json";
+import { SessionGate } from "./session";
 import { localeText } from "./games/shared";
 
 type Game =
@@ -24,14 +29,10 @@ type Game =
   | "wires"
   | "circuit"
   | "fingerprint"
-  | "terminal";
-type NuiMessage = {
-  action: "open" | "close";
-  game?: Game;
-  requestId?: string;
-  options?: Record<string, unknown>;
-};
-
+  | "terminal"
+  | "networkhack"
+  | "safecracker"
+  | "frequencytuning";
 type Theme = {
   main: string;
   accent: string;
@@ -111,6 +112,9 @@ const gameNames: Game[] = [
   "circuit",
   "fingerprint",
   "terminal",
+  "networkhack",
+  "safecracker",
+  "frequencytuning",
 ];
 const requestedMockGame = new URLSearchParams(window.location.search).get(
   "game",
@@ -134,6 +138,12 @@ async function nuiCallback(
   payload: Record<string, unknown> = {},
 ) {
   if (isBrowser) {
+    if (endpoint === "complete" || endpoint === "cancel") {
+      window.dispatchEvent(new CustomEvent("preview-result", { detail: { ...payload,
+        success: payload.game === "keypad" ? payload.code === "1234" : payload.success === true,
+        reason: endpoint === "cancel" ? "cancelled" : payload.success === true || payload.code === "1234" ? "completed" : "failed",
+      } }));
+    }
     if (endpoint === "complete" && payload.game === "keypad") {
       return {
         ok: true,
@@ -327,7 +337,7 @@ function Drill({
   } as React.CSSProperties;
 
   return (
-    <section className="drill-game" aria-label="Drill minigame">
+    <section className="drill-game" aria-label={localeText(options, "drillLabel", "Drill minigame")}>
       <header className="drill-game__header">
         <div>
           <span className="drill-kicker">{localeText(options, "drillKicker", "DEPOSIT LOCK // 4 PIN")}</span>
@@ -335,7 +345,7 @@ function Drill({
         </div>
         <div
           className="pin-counter"
-          aria-label={`${clearedPins} of 4 pins cleared`}
+          aria-label={localeText(options, "drillPins", "{pins} of 4 pins cleared", { pins: clearedPins })}
         >
           {[0, 1, 2, 3].map((pin) => (
             <span
@@ -462,8 +472,7 @@ function Drill({
         {localeText(options, "drillHint", "Let the bit bite. Push gently and pull back when the steel turns red.")}
       </p>
       <span className="sr-only">
-        Difficulty level {difficulty}. Drill heat {Math.round(heat)} percent.
-        Progress {Math.round(depth)} percent.
+        {localeText(options, "drillAccessible", "Difficulty level {difficulty}. Drill heat {heat} percent. Progress {progress} percent.", { difficulty, heat: Math.round(heat), progress: Math.round(depth) })}
       </span>
     </section>
   );
@@ -472,12 +481,10 @@ function Drill({
 function Keypad({
   options,
   onClose,
-  onInputLock,
   requestId,
 }: {
   options: Record<string, unknown>;
   onClose: () => void;
-  onInputLock: (locked: boolean) => void;
   requestId: string;
 }) {
   const requestedTitle =
@@ -486,6 +493,13 @@ function Keypad({
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState<"success" | "error" | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const submissionPending = useRef(false);
+
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
 
   const playFeedbackTone = useCallback((kind: "success" | "error") => {
     try {
@@ -516,9 +530,9 @@ function Keypad({
   }, []);
 
   const submit = useCallback(async () => {
-    if (code.length !== 4 || submitting || feedback) return;
+    if (code.length !== 4 || submissionPending.current || feedback) return;
+    submissionPending.current = true;
     setSubmitting(true);
-    onInputLock(true);
 
     try {
       const response = (await nuiCallback("complete", {
@@ -529,6 +543,7 @@ function Keypad({
         feedback?: "success" | "error";
         close?: boolean;
       };
+      if (!mounted.current) return;
       const result = response.feedback;
 
       if (!result) {
@@ -540,6 +555,8 @@ function Keypad({
       playFeedbackTone(result);
       await new Promise((resolve) => window.setTimeout(resolve, 800));
 
+      if (!mounted.current) return;
+
       if (response.close) {
         await nuiCallback("keypadFeedbackComplete", { requestId });
         onClose();
@@ -549,12 +566,12 @@ function Keypad({
       setCode("");
       setFeedback(null);
     } finally {
-      setSubmitting(false);
-      onInputLock(false);
+      if (mounted.current) {
+        submissionPending.current = false;
+        setSubmitting(false);
+      }
     }
-  }, [code, feedback, onClose, onInputLock, playFeedbackTone, requestId, submitting]);
-
-  useEffect(() => () => onInputLock(false), [onInputLock]);
+  }, [code, feedback, onClose, playFeedbackTone, requestId, submitting]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -576,7 +593,7 @@ function Keypad({
   };
 
   return (
-    <section className="fa-keypad" aria-label={`${title} keypad`}>
+    <section className="fa-keypad" aria-label={localeText(options, "keypadLabel", "{title} keypad", { title })}>
       <div className="fa-keypad__glow" aria-hidden="true" />
       <span
         className="fa-keypad__screw fa-keypad__screw--tl"
@@ -615,7 +632,7 @@ function Keypad({
         </div>
         <div
           className={`code-slots${feedback ? ` is-${feedback}` : ""}`}
-          aria-label={`${code.length} of 4 digits entered`}
+          aria-label={localeText(options, "keypadDigits", "{digits} of 4 digits entered", { digits: code.length })}
         >
           {Array.from({ length: 4 }, (_, index) => (
             <span key={index} className={code[index] ? "is-filled" : ""}>
@@ -645,10 +662,10 @@ function Keypad({
             disabled={submitting || feedback !== null}
             aria-label={
               key === "clear"
-                ? "Clear code"
+                ? localeText(options, "keypadClearLabel", "Clear code")
                 : key === "enter"
-                  ? "Confirm code"
-                  : `Digit ${key}`
+                  ? localeText(options, "keypadConfirm", "Confirm code")
+                  : localeText(options, "keypadDigit", "Digit {digit}", { digit: key })
             }
             className={
               key === "enter"
@@ -689,102 +706,164 @@ function Keypad({
 }
 
 function App() {
-  const [game, setGame] = useState<Game | null>(
-    isBrowser ? browserMockGame : null,
-  );
-  const [options, setOptions] = useState<Record<string, unknown>>(
-    { compact: browserMockCompact, theme: browserMockTheme },
-  );
-  const inputLocked = useRef(false);
-  const completionLocked = useRef(false);
-  const [requestId, setRequestId] = useState("browser-preview");
-
-  const close = useCallback(() => setGame(null), []);
-  const setInputLock = useCallback((locked: boolean) => {
-    inputLocked.current = locked;
-  }, []);
-  const completeStandardGame = useCallback(
-    async (success: boolean, data?: Record<string, unknown>) => {
-      if (!game || completionLocked.current) return;
-      completionLocked.current = true;
-      await nuiCallback("complete", { game, requestId, success, data: data ?? {} });
-      close();
-    },
-    [close, game, requestId],
-  );
+  const [preset, setPreset] = useState<'easy' | 'medium' | 'hard'>(
+    browserParams.get('preset') === 'easy' ? 'easy' : browserParams.get('preset') === 'hard' ? 'hard' : 'medium');
+  const [language, setLanguage] = useState<'en' | 'pl'>(browserParams.get('locale') === 'pl' ? 'pl' : 'en');
+  const [selection, setSelection] = useState<Game>(browserMockGame);
+  const [game, setGame] = useState<Game | null>(isBrowser ? browserMockGame : null);
+  const initialOptions = () => ({ ...previewData.presets[browserMockGame][preset],
+    compact: browserMockCompact, theme: browserMockTheme, locale: previewData.locales[language] });
+  const [options, setOptions] = useState<Record<string, unknown>>(initialOptions);
+  const [requestId, setRequestId] = useState('browser-preview');
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const gate = useRef(new SessionGate());
+  const session = useRef(isBrowser ? 'browser-preview' : '');
+  const generation = useRef(0);
+  const text = (key: string, fallback: string) => localeText({ locale: previewData.locales[language] }, key, fallback);
 
   useEffect(() => {
-    const onMessage = (event: MessageEvent<NuiMessage>) => {
-      if (event.data.action === "close") return close();
-      if (event.data.action === "open" && event.data.game) {
-        completionLocked.current = false;
-        setOptions(event.data.options ?? {});
-        setRequestId(event.data.requestId ?? "");
-        setGame(event.data.game);
-      }
+    document.documentElement.lang = typeof options.localeName === 'string' ? options.localeName.replace('_', '-') : language;
+  }, [language, options.localeName]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const setNavigation = (enabled: boolean) => {
+      const value = String(enabled);
+      if (root.dataset.focusNavigation !== value) root.dataset.focusNavigation = value;
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || !game || inputLocked.current) return;
-      void nuiCallback("cancel").finally(close);
+      if (['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return;
+      setNavigation(event.key === 'Tab');
     };
-    window.addEventListener("message", onMessage);
-    window.addEventListener("keydown", onKey);
+    const onPointer = () => setNavigation(false);
+    setNavigation(false);
+    window.addEventListener('keydown', onKey, true);
+    window.addEventListener('pointerdown', onPointer, true);
     return () => {
-      window.removeEventListener("message", onMessage);
-      window.removeEventListener("keydown", onKey);
+      window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('pointerdown', onPointer, true);
     };
-  }, [close, game]);
+  }, []);
 
-  if (!game) return null;
+  useEffect(() => {
+    document.documentElement.dataset.focusNavigation = 'false';
+  }, [requestId]);
 
+  useEffect(() => {
+    if (isBrowser) gate.current.open('browser-preview');
+  }, []);
+
+  const closeSession = useCallback((id: string) => {
+    if (!gate.current.close(id)) return;
+    session.current = '';
+    setGame(null);
+  }, []);
+  const close = useCallback(() => closeSession(requestId), [closeSession, requestId]);
+  const completeStandardGame = useCallback(async (success: boolean, data?: Record<string, unknown>) => {
+    if (!game || !gate.current.claim(requestId)) return;
+    try {
+      await nuiCallback('complete', { game, requestId, success, data: data ?? {} });
+    } finally {
+      closeSession(requestId);
+    }
+  }, [closeSession, game, requestId]);
+
+  const startPreview = (nextGame = selection, nextPreset = preset, nextLanguage = language) => {
+    const id = `browser-${++generation.current}`;
+    gate.current.open(id);
+    session.current = id;
+    setSelection(nextGame);
+    setPreset(nextPreset);
+    setLanguage(nextLanguage);
+    setOptions({ ...previewData.presets[nextGame][nextPreset], compact: browserMockCompact,
+      theme: browserMockTheme, locale: previewData.locales[nextLanguage] });
+    setResult(null);
+    setRequestId(id);
+    setGame(nextGame);
+  };
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent<unknown>) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object' || !('action' in data) || !('requestId' in data) || typeof data.requestId !== 'string') return;
+      if (data.action === 'close') return closeSession(data.requestId);
+      if (data.action !== 'open' || !('game' in data)) return;
+      const nextGame = gameNames.find(name => name === data.game);
+      if (!nextGame || !data.requestId) return;
+      gate.current.open(data.requestId);
+      session.current = data.requestId;
+      setOptions('options' in data && data.options && typeof data.options === 'object'
+        ? Object.fromEntries(Object.entries(data.options)) : {});
+      setRequestId(data.requestId);
+      setGame(nextGame);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !game) return;
+      event.preventDefault();
+      if (!gate.current.claim(requestId)) return;
+      void nuiCallback('cancel', { requestId, game }).finally(() => closeSession(requestId));
+    };
+    window.addEventListener('message', onMessage);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('message', onMessage);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [closeSession, game, requestId]);
+
+  useEffect(() => {
+    if (!isBrowser) return;
+    const onResult = (event: Event) => {
+      if (!(event instanceof CustomEvent) || !event.detail || typeof event.detail !== 'object') return;
+      if (event.detail.requestId === session.current) setResult(event.detail);
+    };
+    window.addEventListener('preview-result', onResult);
+    return () => window.removeEventListener('preview-result', onResult);
+  }, []);
+
+  useEffect(() => {
+    if (!isBrowser || !game) return;
+    const timer = window.setTimeout(() => {
+      if (!gate.current.claim(requestId)) return;
+      setResult({ success: false, reason: 'timeout', game, requestId });
+      closeSession(requestId);
+    }, Number(options.timeout) || 45000);
+    return () => window.clearTimeout(timer);
+  }, [closeSession, game, options.timeout, requestId]);
+
+  if (!game && !isBrowser) return null;
   const themeStyle = createThemeStyle(options);
-
-  return (
-    <main className="overlay" style={themeStyle}>
-      <div className="grain" />
-      {isBrowser && (
-        <nav className="mock-switch" aria-label="Browser mock selector">
-          {gameNames.map((name) => (
-            <button
-              key={name}
-              className={game === name ? "is-active" : ""}
-              onClick={() => setGame(name)}
-            >
-              {name}
-            </button>
-          ))}
-        </nav>
-      )}
-      {game === "drill" && <Drill options={options} onClose={close} requestId={requestId} />}
-      {game === "keypad" && (
-        <Keypad options={options} onClose={close} onInputLock={setInputLock} requestId={requestId} />
-      )}
-      {game === "skillbar" && (
-        <Skillbar options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "sequence" && (
-        <Sequence options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "lockpick" && (
-        <Lockpick options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "pattern" && (
-        <Pattern options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "wires" && (
-        <Wires options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "circuit" && (
-        <Circuit options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "fingerprint" && (
-        <Fingerprint options={options} onComplete={completeStandardGame} />
-      )}
-      {game === "terminal" && (
-        <Terminal options={options} onComplete={completeStandardGame} />
-      )}
-    </main>
-  );
+  return <main className="overlay" style={themeStyle}>
+    <div className="grain" />
+    {isBrowser && <nav className="preview-toolbar" aria-label={text('previewTitle', 'Minigame preview')}>
+      <label>{text('previewGame', 'Game')}<select value={selection} onChange={event => {
+        const next = gameNames.find(name => name === event.target.value);
+        if (next) startPreview(next);
+      }}>{gameNames.map(name => <option key={name}>{name}</option>)}</select></label>
+      <label>{text('previewPreset', 'Difficulty')}<select value={preset} onChange={event => {
+        const next = event.target.value;
+        if (next === 'easy' || next === 'medium' || next === 'hard') startPreview(selection, next);
+      }}><option>easy</option><option>medium</option><option>hard</option></select></label>
+      <label>{text('previewLocale', 'Language')}<select value={language} onChange={event => startPreview(selection, preset, event.target.value === 'pl' ? 'pl' : 'en')}><option>en</option><option>pl</option></select></label>
+      <button onClick={() => startPreview()}>{text('previewRestart', 'Restart')}</button>
+      <output aria-live="polite">{result ? `${text('previewResult', 'Result')}: ${JSON.stringify(result)}` : text('previewRunning', 'Game in progress')}</output>
+    </nav>}
+    <div key={requestId} className="game-session">
+      {game === 'drill' && <Drill options={options} onClose={close} requestId={requestId} />}
+      {game === 'keypad' && <Keypad options={options} onClose={close} requestId={requestId} />}
+      {game === 'skillbar' && <Skillbar options={options} onComplete={completeStandardGame} />}
+      {game === 'sequence' && <Sequence options={options} onComplete={completeStandardGame} />}
+      {game === 'lockpick' && <Lockpick options={options} onComplete={completeStandardGame} />}
+      {game === 'pattern' && <Pattern options={options} onComplete={completeStandardGame} />}
+      {game === 'wires' && <Wires options={options} onComplete={completeStandardGame} />}
+      {game === 'circuit' && <Circuit options={options} onComplete={completeStandardGame} />}
+      {game === 'fingerprint' && <Fingerprint options={options} onComplete={completeStandardGame} />}
+      {game === 'terminal' && <Terminal options={options} onComplete={completeStandardGame} />}
+      {game === 'networkhack' && <NetworkHack options={options} onComplete={completeStandardGame} />}
+      {game === 'safecracker' && <Safecracker options={options} onComplete={completeStandardGame} />}
+      {game === 'frequencytuning' && <FrequencyTuning options={options} onComplete={completeStandardGame} />}
+    </div>
+  </main>;
 }
 
 createRoot(document.getElementById("root")!).render(

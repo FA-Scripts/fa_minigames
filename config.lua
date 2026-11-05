@@ -1,6 +1,7 @@
 Config = {}
 
 Config.Locale = 'en'
+Config.Debug = false
 
 -- Hex colours only (#RRGGBB). These defaults apply to every minigame.
 Config.Theme = {

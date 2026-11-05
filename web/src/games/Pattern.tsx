@@ -49,7 +49,7 @@ export function Pattern({ options, onComplete }: GameProps) {
             }
             onClick={() => choose(cell)}
             disabled={preview}
-            aria-label={`Cell ${cell + 1}`}
+            aria-label={localeText(options, "patternCell", "Cell {cell}", { cell: cell + 1 })}
           />
         ))}
       </div>
